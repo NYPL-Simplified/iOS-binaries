@@ -15,7 +15,7 @@ jobs:
            files=( $GITHUB_WORKSPACE/*.ipa )
            file="${files[${#files[@]}-1]}"
            echo $file
-           APP_UPLOAD_RESPONSE=$(curl -u "${{ secrets.BROWSERSTACK_USERNAME }}:${{ secrets.BROWSERSTACK_ACCESSKEY }}" -X POST https://api-cloud.browserstack.com/app-automate/upload -F "file=@$GITHUB_WORKSPACE/$file")
+           APP_UPLOAD_RESPONSE=$(curl -u "${{ secrets.BROWSERSTACK_USERNAME }}:${{ secrets.BROWSERSTACK_ACCESSKEY }}" -X POST https://api-cloud.browserstack.com/app-automate/upload -F "file=@$file")
            APP_ID=$(echo $APP_UPLOAD_RESPONSE | jq -r ".app_url")
            BUILD_NAME=$file
            if [ $APP_ID != null ]; then
