@@ -1,0 +1,16 @@
+name: Start test run
+
+on:
+  push:
+    branches: [ workflow ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Upload to browserstack and trigger tests
+        run: |
+           files=( $GITHUB_WORKSPACE/*.tar.gz )
+           echo '${files[0]}'
