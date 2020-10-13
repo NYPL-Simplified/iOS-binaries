@@ -13,4 +13,4 @@ jobs:
       - name: Upload to browserstack and trigger tests
         run: |
            files=( $GITHUB_WORKSPACE/*.ipa )
-           echo "${files[0]}"
+           echo "${files[${#files[@]}-1]}"
