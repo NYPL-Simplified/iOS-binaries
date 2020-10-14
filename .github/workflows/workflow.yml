@@ -14,7 +14,7 @@ jobs:
         run: |
            files=( $GITHUB_WORKSPACE/*.ipa )
            file="${files[${#files[@]}-1]}"
-           fileWithReplacedPath=${file/$GITHUB_WORKSPACE/""}
+           fileWithReplacedPath=${file/$GITHUB_WORKSPACE'/'/""}
            echo $fileWithReplacedPath
            echo $file
            echo "file=@$file"
