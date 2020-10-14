@@ -21,7 +21,7 @@ jobs:
            APP_UPLOAD_RESPONSE=$(curl -u "${{ secrets.BROWSERSTACK_USERNAME }}:${{ secrets.BROWSERSTACK_ACCESSKEY }}" -X POST https://api-cloud.browserstack.com/app-automate/upload -F "file=@$file")
            echo $APP_UPLOAD_RESPONSE
            APP_ID=$(echo $APP_UPLOAD_RESPONSE | jq -r ".app_url")
-           BUILD_NAME=$file
+           BUILD_NAME=${fileWithReplacedPath/".ipa"/""}
            if [ $APP_ID != null ]; then
              echo "Apk uploaded to BrowserStack with app id : $APP_ID";
              #echo "export BROWSERSTACK_APP_ID=$APP_ID" >> $BASH_ENV;
