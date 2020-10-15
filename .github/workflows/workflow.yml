@@ -15,6 +15,7 @@ jobs:
            files=($GITHUB_WORKSPACE/*.ipa)
            file="${files[${#files[@]}-1]}"
            fileWithReplacedPath=${file/$GITHUB_WORKSPACE'/'/""}
+           echo "Uploading following file"
            echo $file
            APP_UPLOAD_RESPONSE=$(curl -u "${{ secrets.BROWSERSTACK_USERNAME }}:${{ secrets.BROWSERSTACK_ACCESSKEY }}" -X POST "https://api-cloud.browserstack.com/app-automate/upload" -F "file=@$file")
            echo $APP_UPLOAD_RESPONSE
