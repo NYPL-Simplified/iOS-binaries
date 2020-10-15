@@ -2,7 +2,7 @@ name: Start test run
 
 on:
   push:
-    branches: [ workflow ]
+    branches: [ master ]
 
 jobs:
   build:
@@ -33,4 +33,4 @@ jobs:
                           exit 1;
            fi
            echo "Triggering autotests"
-           curl -X POST -H "Accept:application/vnd.github.v3+json" https://api.github.com/repos/NYPL-Simplified/integration-tests-android/actions/workflows/2444436/dispatches -d '{"ref":"test_tags", "inputs":{"test_tag":"(@smoke1 and @smoke2)","bs_app_link":"'"$APP_ID"'","platform_name":"ios","build_name":"'"$BUILD_NAME"'"}}' -H "Authorization: token ${{secrets.PERSONAL_TOKEN}}" 
+           curl -X POST -H "Accept:application/vnd.github.v3+json" https://api.github.com/repos/NYPL-Simplified/integration-tests-android/actions/workflows/2444436/dispatches -d '{"ref":"master", "inputs":{"test_tag":"(@tier1 or @tier2 or @tier3)","bs_app_link":"'"$APP_ID"'","platform_name":"ios","build_name":"'"$BUILD_NAME"'"}}' -H "Authorization: token ${{secrets.PERSONAL_TOKEN}}" 
