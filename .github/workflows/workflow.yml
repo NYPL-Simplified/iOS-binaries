@@ -16,7 +16,7 @@ jobs:
            file="${files[${#files[@]}-1]}"
            fileWithReplacedPath=${file/$GITHUB_WORKSPACE'/'/""}
            echo $file
-           APP_UPLOAD_RESPONSE=$(curl -u "${{ secrets.BROWSERSTACK_USERNAME }}:${{ secrets.BROWSERSTACK_ACCESSKEY }}" -X POST "https://api-cloud.browserstack.com/app-automate/upload" -F "file=$file")
+           APP_UPLOAD_RESPONSE=$(curl -u "${{ secrets.BROWSERSTACK_USERNAME }}:${{ secrets.BROWSERSTACK_ACCESSKEY }}" -X POST "https://api-cloud.browserstack.com/app-automate/upload" -F "file=@$file")
            echo $APP_UPLOAD_RESPONSE
            APP_ID=$(echo $APP_UPLOAD_RESPONSE | jq -r ".app_url")
            BUILD_NAME=${fileWithReplacedPath/".ipa"/""}
