@@ -12,7 +12,7 @@ jobs:
 
       - name: Upload to browserstack and trigger tests
         run: |
-           files=( $GITHUB_WORKSPACE/*.ipa )
+           files=($GITHUB_WORKSPACE/*.ipa)
            file="${files[${#files[@]}-1]}"
            fileWithReplacedPath=${file/$GITHUB_WORKSPACE'/'/""}
            echo $file
