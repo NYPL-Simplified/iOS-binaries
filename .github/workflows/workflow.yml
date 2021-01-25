@@ -2,7 +2,7 @@ name: Start test run
 
 on:
   push:
-    branches: [ master ]
+    branches: [ upd_script ]
 
 jobs:
   build:
@@ -12,9 +12,13 @@ jobs:
 
       - name: Upload to browserstack and trigger tests
         run: |
-           files=($GITHUB_WORKSPACE/*.ipa)
+           mkdir temp_for_zip_extract
+           archives=($GITHUB_WORKSPACE/*.zip)
+           archive="${archives[${#archives[@]}-1]}"
+           unzip /path/to/file.zip -d temp_for_zip_extract
+           files=($GITHUB_WORKSPACE/temp_for_zip_extract/*.ipa)
            file="${files[${#files[@]}-1]}"
-           fileWithReplacedPath=${file/$GITHUB_WORKSPACE'/'/""}
+           fileWithReplacedPath=${file/$GITHUB_WORKSPACE'/'temp_for_zip_extract'/'/""}
            echo "Uploading following file"
            echo $file
            APP_UPLOAD_RESPONSE=$(curl -u "${{ secrets.BROWSERSTACK_USERNAME }}:${{ secrets.BROWSERSTACK_ACCESSKEY }}" -X POST "https://api-cloud.browserstack.com/app-automate/upload" -F "file=@$file")
@@ -33,4 +37,4 @@ jobs:
                           exit 1;
            fi
            echo "Triggering autotests"
-           curl -X POST -H "Accept:application/vnd.github.v3+json" https://api.github.com/repos/NYPL-Simplified/integration-tests-android/actions/workflows/2444436/dispatches -d '{"ref":"master", "inputs":{"test_tag":"(@tier1 or @tier2 or @tier3)","bs_app_link":"'"$APP_ID"'","platform_name":"ios","build_name":"'"$BUILD_NAME"'"}}' -H "Authorization: token ${{secrets.PERSONAL_TOKEN}}" 
+           #curl -X POST -H "Accept:application/vnd.github.v3+json" https://api.github.com/repos/NYPL-Simplified/integration-tests-android/actions/workflows/2444436/dispatches -d '{"ref":"master", "inputs":{"test_tag":"(@tier1 or @tier2 or @tier3)","bs_app_link":"'"$APP_ID"'","platform_name":"ios","build_name":"'"$BUILD_NAME"'"}}' -H "Authorization: token ${{secrets.PERSONAL_TOKEN}}" 
