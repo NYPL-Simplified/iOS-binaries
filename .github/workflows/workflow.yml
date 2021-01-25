@@ -15,7 +15,7 @@ jobs:
            mkdir temp_for_zip_extract
            archives=($GITHUB_WORKSPACE/*.zip)
            archive="${archives[${#archives[@]}-1]}"
-           unzip /path/to/file.zip -d temp_for_zip_extract
+           unzip $archive -d temp_for_zip_extract
            files=($GITHUB_WORKSPACE/temp_for_zip_extract/*.ipa)
            file="${files[${#files[@]}-1]}"
            fileWithReplacedPath=${file/$GITHUB_WORKSPACE'/'temp_for_zip_extract'/'/""}
