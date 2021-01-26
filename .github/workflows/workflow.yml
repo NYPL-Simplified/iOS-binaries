@@ -11,26 +11,37 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Upload to browserstack and trigger tests
-        run: |
-           files=($GITHUB_WORKSPACE/*.ipa)
-           file="${files[${#files[@]}-1]}"
-           fileWithReplacedPath=${file/$GITHUB_WORKSPACE'/'/""}
-           echo "Uploading following file"
-           echo $file
-           APP_UPLOAD_RESPONSE=$(curl -u "${{ secrets.BROWSERSTACK_USERNAME }}:${{ secrets.BROWSERSTACK_ACCESSKEY }}" -X POST "https://api-cloud.browserstack.com/app-automate/upload" -F "file=@$file")
-           echo $APP_UPLOAD_RESPONSE
-           APP_ID=$(echo $APP_UPLOAD_RESPONSE | jq -r ".app_url")
-           BUILD_NAME=${fileWithReplacedPath/".ipa"/""}
-           if [ $APP_ID != null ]; then
-             echo "Apk uploaded to BrowserStack with app id : $APP_ID";
-             #echo "export BROWSERSTACK_APP_ID=$APP_ID" >> $BASH_ENV;
-             export BROWSERSTACK_APP_ID=$APP_ID
-             #source $BASH_ENV;
-             echo "Setting value of BROWSERSTACK_APP_ID in environment variables to $APP_ID";
-           else
-             UPLOAD_ERROR_MESSAGE=$(echo $APP_UPLOAD_RESPONSE | jq -r ".error")
-             echo "App upload failed, reason : ",$UPLOAD_ERROR_MESSAGE
-                          exit 1;
-           fi
-           echo "Triggering autotests"
-           curl -X POST -H "Accept:application/vnd.github.v3+json" https://api.github.com/repos/NYPL-Simplified/integration-tests-android/actions/workflows/2444436/dispatches -d '{"ref":"master", "inputs":{"test_tag":"(@tier1 or @tier2 or @tier3)","bs_app_link":"'"$APP_ID"'","platform_name":"ios","build_name":"'"$BUILD_NAME"'"}}' -H "Authorization: token ${{secrets.PERSONAL_TOKEN}}" 
+        uses: jitterbit/get-changed-files@v1
+        with:
+          format: 'csv'
+      - run: |
+          mapfile -d ',' -t added_modified_files < <(printf '%s,' '${{ steps.files.outputs.added_modified }}')
+          for added_modified_file in "${added_modified_files[@]}"; do          
+          echo "Started uploading ${added_modified_file}."
+          mkdir temp_for_zip_extract
+          archive="$added_modified_file"
+          unzip $archive -d temp_for_zip_extract
+          files=($GITHUB_WORKSPACE/temp_for_zip_extract/*/*.ipa)
+          file="${files[${#files[@]}-1]}"
+          fileWithReplacedPath=${archive/$GITHUB_WORKSPACE'/'/""}
+          echo "Uploading following file"
+          echo $file
+          APP_UPLOAD_RESPONSE=$(curl -u "${{ secrets.BROWSERSTACK_USERNAME }}:${{ secrets.BROWSERSTACK_ACCESSKEY }}" -X POST "https://api-cloud.browserstack.com/app-automate/upload" -F "file=@$file")
+          echo $APP_UPLOAD_RESPONSE
+          APP_ID=$(echo $APP_UPLOAD_RESPONSE | jq -r ".app_url")
+          BUILD_NAME=${fileWithReplacedPath/".ipa"/""}
+          if [ $APP_ID != null ]; then
+            echo "Apk uploaded to BrowserStack with app id : $APP_ID";
+            #echo "export BROWSERSTACK_APP_ID=$APP_ID" >> $BASH_ENV;
+            export BROWSERSTACK_APP_ID=$APP_ID
+            #source $BASH_ENV;
+            echo "Setting value of BROWSERSTACK_APP_ID in environment variables to $APP_ID";
+          else
+            UPLOAD_ERROR_MESSAGE=$(echo $APP_UPLOAD_RESPONSE | jq -r ".error")
+            echo "App upload failed, reason : ",$UPLOAD_ERROR_MESSAGE
+                         exit 1;
+          fi
+          echo "Triggering autotests"
+          curl -X POST -H "Accept:application/vnd.github.v3+json" https://api.github.com/repos/NYPL-Simplified/integration-tests-android/actions/workflows/2444436/dispatches -d '{"ref":"master", "inputs":{"test_tag":"(@tier1 or @tier2 or @tier3)","bs_app_link":"'"$APP_ID"'","platform_name":"ios","build_name":"'"$BUILD_NAME"'"}}' -H "Authorization: token ${{secrets.PERSONAL_TOKEN}}" 
+          done
+           
