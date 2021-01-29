@@ -2,7 +2,7 @@ name: Start test run
 
 on:
   push:
-    branches: [ fix_script ]
+    branches: [ master ]
 
 jobs:
   build:
