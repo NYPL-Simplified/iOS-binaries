@@ -9,12 +9,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-      - name: Upload to browserstack and trigger tests
-      - uses: actions/checkout@v2
-      - uses: jitterbit/get-changed-files@v1    
+      - uses: actions/checkout@v2    
+      - uses: jitterbit/get-changed-files@v1
+        id: files
         with:
           format: 'json'
-      - run: |
+      - name: Upload to browserstack and trigger tests
+        run: |
           readarray -t added_modified_file <<<"$(jq -r '.[]' <<<'${{ steps.files.outputs.added_modified }}')"
           echo "Started uploading ${added_modified_file}"
           mkdir temp_for_zip_extract
