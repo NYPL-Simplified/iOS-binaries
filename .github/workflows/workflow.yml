@@ -13,9 +13,9 @@ jobs:
       - name: Upload to browserstack and trigger tests
         uses: jitterbit/get-changed-files@v1
         with:
-          format: 'csv'
+          format: 'json'
       - run: |
-          mapfile -d ',' -t added_modified_files < <(printf '%s,' '${{ steps.files.outputs.added_modified }}')
+          readarray -t added_modified_files <<<"$(jq -r '.[]' <<<'${{ steps.files.outputs.added_modified }}')"
           for added_modified_file in "${added_modified_files[@]}"; do          
           echo "Started uploading ${added_modified_file}."
           mkdir temp_for_zip_extract
