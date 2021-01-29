@@ -8,16 +8,16 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
 
-      - name: Upload to browserstack and trigger tests
-        uses: jitterbit/get-changed-files@v1
+      - uses: actions/checkout@v2    
+      - uses: jitterbit/get-changed-files@v1
+        id: files
         with:
           format: 'json'
-      - run: |
-          readarray -t added_modified_files <<<"$(jq -r '.[]' <<<'${{ steps.files.outputs.added_modified }}')"
-          for added_modified_file in "${added_modified_files[@]}"; do          
-          echo "Started uploading ${added_modified_file}."
+      - name: Upload to browserstack and trigger tests
+        run: |
+          readarray -t added_modified_file <<<"$(jq -r '.[]' <<<'${{ steps.files.outputs.added_modified }}')"
+          echo "Started uploading ${added_modified_file}"
           mkdir temp_for_zip_extract
           archive="$added_modified_file"
           unzip $archive -d temp_for_zip_extract
@@ -43,5 +43,5 @@ jobs:
           fi
           echo "Triggering autotests"
           curl -X POST -H "Accept:application/vnd.github.v3+json" https://api.github.com/repos/NYPL-Simplified/integration-tests-android/actions/workflows/2444436/dispatches -d '{"ref":"master", "inputs":{"test_tag":"(@tier1 or @tier2 or @tier3)","bs_app_link":"'"$APP_ID"'","platform_name":"ios","build_name":"'"$BUILD_NAME"'"}}' -H "Authorization: token ${{secrets.PERSONAL_TOKEN}}" 
-          done
+        
            
