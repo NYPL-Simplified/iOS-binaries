@@ -15,7 +15,7 @@ jobs:
         with:
           format: 'json'
       - run: |
-          readarray -t added_modified_file <<<"$(jq -r '.[]' <<<'${{ steps.files.outputs.added }}')"
+          readarray -t added_modified_file <<<"$(jq -r '.[]' <<<'${{ steps.files.outputs.added_modified }}')"
           echo "Started uploading ${added_modified_file}"
           mkdir temp_for_zip_extract
           archive="$added_modified_file"
