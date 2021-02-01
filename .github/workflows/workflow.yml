@@ -1,8 +1,8 @@
 name: Start test run
 
 on:
-  schedule:
-    - cron:  '30 0 * * 1-5'
+  push:
+    branches: [ master ]
 
 jobs:
   build:
